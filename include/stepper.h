@@ -9,13 +9,13 @@ class Stepper {
       : _dir(dir), _step(step) {}
   void start(int stepNum, bool dir);
   volatile bool isMoving = false;
+  volatile int _stepNum = 0;
+  volatile int stepCounter = 0;
 
  private:
   Ticker stepTick;
   DigitalOut& _dir;
   DigitalOut& _step;
-  volatile int _stepNum = 0;
-  volatile int stepCounter = 0;
 
   void tickFunc();
 };
