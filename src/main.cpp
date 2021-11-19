@@ -87,7 +87,7 @@ void endprotocol()
   if(can.read(msg8))
   {
     checkend.detach();
-    dc_dir = 0;
+    dc_con = 0;
     while(1)
     {
 
