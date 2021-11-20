@@ -76,6 +76,7 @@ int main()
   if(can.read(msg8))
   {
     dc_dir = 0;
+    dc_con = 0;
     while(1)
     {
 
@@ -83,6 +84,5 @@ int main()
   }
     wait_us(100000);
   }
-  return 0;
+  return 0; 
 }
-
