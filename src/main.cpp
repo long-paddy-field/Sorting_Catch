@@ -15,11 +15,8 @@ DigitalOut stepping(PA_1);
 DigitalOut dir(PA_3);
 
 Stepper stepper(dir,stepping);
-Ticker checkend;
 
 bool R_or_L = true;
-
-void endprotocol();
 
 int main()
 {
@@ -47,7 +44,6 @@ int main()
   {
 
   }
-  checkend.attach(callback(&endprotocol),100ms);
   printf("start SHIWAKE!\n");
 
   while(1)
@@ -77,21 +73,16 @@ int main()
       R_or_L = !R_or_L;
       //ステッピングモータを回す
     }
-    wait_us(100000);
-  }
-  return 0;
-}
-
-void endprotocol()
-{
   if(can.read(msg8))
   {
-    checkend.detach();
     dc_dir = 0;
     while(1)
     {
 
     }
   }
-  
+    wait_us(100000);
+  }
+  return 0;
 }
+
