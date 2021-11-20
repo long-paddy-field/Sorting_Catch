@@ -2,11 +2,13 @@ asm(".global _printf_float");
 
 #include"mbed.h"
 #include"stepper.h"
+#include"controller.h"
 
 CAN can(PA_11,PA_12,50000);
-CANMessage msg5(0x5,CANStandard);
-CANMessage msg7(0x7,CANStandard);
-CANMessage msg8(0x8,CANStandard);
+CANMessage msg1(0x1,CANStandard);
+CANMessage msg3(0x3,CANStandard);
+CANMessage msg4(0x4,CANStandard);
+Controller controller(can,0x334);
 DigitalIn sw(PA_10);
 PwmOut dc_con(PA_7);
 DigitalOut dc_dir(PA_6);
@@ -14,9 +16,6 @@ DigitalOut dc_dir(PA_6);
 DigitalOut stepping(PA_1);
 DigitalOut dir(PA_3);
 
-Stepper stepper(dir,stepping);
-
-bool R_or_L = true;
 
 int main()
 {
@@ -30,59 +29,46 @@ int main()
   {
 
   }
-  stepper.start(500,0);
-  printf("dir = 0\n");
-  while(stepper.isMoving)
+  while(1)
   {
-    printf("stepnum = %d\n",stepper._stepNum);
-    wait_us(500000);
+    if(controller.buttons)
+    wait_us(100000);
   }
-  stepper.start(500,1);
-  printf("dir = 1\n");
   */
-  while(!can.read(msg5))
+  while(!can.read(msg1))
   {
 
   }
   printf("start SHIWAKE!\n");
-
-  while(1)
+  while(!can.read(msg4))
   {
-    if(can.read(msg7))
+    if(can.read(msg3) && msg3.data[0] == 1)
     {
-      if(R_or_L)
+      if(controller.buttons[0]==1)
       {
-        printf("activate SHIWAKE\n");
-        stepper.start(140,0);
-        while(stepper.isMoving)
-        {
-        }
-        stepper.start(140,1);
-        dc_con = 0.7;
-        dc_dir = 1;
-        wait_us(3000000);
-        dc_con = 0;
+        //ステッパー左
+        dir = 0;
+        stepping = !stepping;
+      }else if(controller.buttons[2]==1)
+      {
+        //ステッパー右
+        dir = 1;
+        stepping = !stepping;
       }
-      else{
-        printf("non-activate SHIWAKE\n");
-        dc_con = 0.7;
+      if(controller.buttons[1]==1)
+      {
         dc_dir = 1;
-        wait_us(3000000);
-        dc_con = 0;
+        dc_con = 0.3;
+        //コンベア正転
+      }else if(controller.buttons[3]==1)
+      {
+        dc_dir = 0;
+        dc_con = 0.3;
+        //コンベア逆転
       }
-      R_or_L = !R_or_L;
-      //ステッピングモータを回す
     }
-  if(can.read(msg8))
-  {
-    dc_dir = 0;
-    dc_con = 0;
-    while(1)
-    {
-
-    }
+    wait_us(4000);
   }
-    wait_us(100000);
-  }
+  dc_con = 0;
   return 0; 
 }
