@@ -4,7 +4,7 @@ asm(".global _printf_float");
 #include"stepper.h"
 #include"controller.h"
 
-CAN can(PA_11,PA_12,50000);
+RawCAN can(PA_11,PA_12,50000);
 CANMessage msg1(0x1,CANStandard);
 CANMessage msg3(0x3,CANStandard);
 CANMessage msg4(0x4,CANStandard);
@@ -46,6 +46,7 @@ int main()
     {
       if(controller.buttons[0]==1)
       {
+        
         //ステッパー左
         dir = 0;
         stepping = !stepping;
